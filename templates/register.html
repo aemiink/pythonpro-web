@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/img/ıcon.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Yazılım Dehası // Bilgilerini Pekiştir!</title>
+</head>
+<body>
+    <header>
+        <nav class="header__nav">
+            <ul class="nav__list">
+                <li class="list__element list__image"><img class="logo" src="/static/img/logo.png" alt="site_logo"></li>
+                <li class="list__element"><a href="{{ url_for('index') }}"> Ana Sayfa </a></li>
+                <li class="list__element"><a href="{{ url_for('exam') }}"> Sınav </a></li>
+                <li class="list__element"><a href="{{ url_for('add_question') }}"> Soru Ekle </a></li>
+                <li class="list__element"><a href="{{ url_for('leaderboard') }}"> Lider Tablosu </a></li>
+                <li class="list__element"><a href=""> Yazılım Diilleri </a></li>
+                {% if current_user.is_authenticated %}
+                    <li class="list__element"><a href="">{{ current_user.username }}</a></li>
+                    <li class="list__element button"><a id="logout-link" href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+                {% else %}
+                    <li class="list__element button"><a href="{{ url_for('login') }}">Giriş Yap</a></li>
+                    <li class="list__element button"><a href="{{ url_for('register') }}">Kayıt Ol</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="register_form">
+            <center>
+                <h1>Kayıt Olmak İçin Aşağıyı Kullan!</h1>
+                <form method="POST" action="{{url_for('register')}}">
+                    {{ form.hidden_tag() }}
+
+                    <label for="username">Kullanıcı Adı:</label>
+                    {{ form.username(size=20, placeholder='Kullanıcı Adı') }}
+                    {% for error in form.username.errors %}
+                        <p style="color: red;">{{ error }}</p>
+                    {% endfor %}
+
+                    <label for="email">E-posta:</label>
+                    {{ form.email(size=20, placeholder='E-posta') }}
+                    {% for error in form.email.errors %}
+                        <p style="color: red;">{{ error }}</p>
+                    {% endfor %}
+
+                    <label for="password">Parola:</label>
+                    {{ form.password(size=20, placeholder='Parola')}}
+                    {% for error in form.password.errors %}
+                        <p style="color: red;">{{ error }}</p>
+                    {% endfor %}
+
+                    {{ form.submit(style="background-color: #F88B9D ; color: aliceblue; font-family:'Nova Square', sans-serif; padding: 10px 20px; font-size: 16px; margin-top: 10px;")}}
+                </form>
+            </center>   
+        </div>  
+    </main>   
+    <div class="block-div-tr"></div>
+    <footer>
+        <p>Tüm Hakları Saklıdır. Ahmet Emin Kaya®</p>
+    </footer>
+</body>
+</html>

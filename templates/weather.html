@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/img/ıcon.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Yazılım Dehası // Hava Arama Sonucu</title>
+</head>
+<body>
+    <header>
+        <nav class="header__nav">
+            <ul class="nav__list">
+                <li class="list__element list__image"><img class="logo" src="/static/img/logo.png" alt="site_logo"></li>
+                <li class="list__element"><a href="{{ url_for('index') }}"> Ana Sayfa </a></li>
+                <li class="list__element"><a href="{{ url_for('exam') }}"> Sınav </a></li>
+                <li class="list__element"><a href="{{ url_for('add_question') }}"> Soru Ekle </a></li>
+                <li class="list__element"><a href="{{ url_for('leaderboard') }}"> Lider Tablosu </a></li>
+                <li class="list__element"><a href=""> Yazılım Diilleri </a></li>
+                {% if current_user.is_authenticated %}
+                    <li class="list__element"><a href="">{{ current_user.username }}</a></li>
+                    <li class="list__element button"><a id="logout-link" href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+                {% else %}
+                    <li class="list__element button"><a href="{{ url_for('login') }}">Giriş Yap</a></li>
+                    <li class="list__element button"><a href="{{ url_for('register') }}">Kayıt Ol</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <div class="conatiner">
+                <div class="hh-title-wr mod--home">
+                    <img src="/static/img/woman.png" loading="lazy" width="140" alt="" class="hhero-right tr-hero-right">
+                    <h1 class="hhero-h1 tr-hhero">
+                        <span class="cover mod--hhero1 tr-cover">Dünün Bebeleri,</span>
+                        <span class="cover tr-cover">yarının</span>
+                        <span class="cover-large">YAZILIMCILARI</span>
+                    </h1>
+                    <img src="/static/img/man.png" loading="lazy" width="140"  alt="" class="hhero-left tr-hero-left">
+                    <img src="/images/hero-circle.png" loading="lazy" width="90" alt="" class="hhero-circle">
+                    <img src="/images/hero-cross.png" loading="lazy" data-w-id="a94f8945-159d-75f6-a34f-3ccb1c265ce4" width="90.5" alt="" class="hhero-cross">
+                    <p class="hero-p"> 8-17 yaş arası çocukların ögrendiği becerileri test ettikleri ve oları onlıne IDE kullanarak gerçeğe donüştürdüğü çevrimiçi dijital test platformu </p>
+                </div>
+            </div>
+
+            <div class="block-div-tr"></div>
+            {% block content %}
+            <center>
+                <div class="weather">
+                    <h1>Hava Durumu Sorgula</h1>
+                    <form action="/weather" method="POST">
+                        <input type="text" name="city" placeholder="Şehir">
+                        <button type="submit">Hava Durumu Sorgula</button>
+                    </form>
+                </div>
+            </center>
+               
+            <div class="block-div-tr"></div>
+            <center>
+                <div class="weather-info">
+                    <h1>{{ weather.city }}, {{ weather.country }}</h1>
+                    <p>{{ weather.description }}</p>
+                    <p>{{ weather.temperature }}°C</p>
+                </div>
+
+
+            </center>
+            {% endblock %}
+        </section>
+        <section>
+            
+        </section>
+    </main>
+    <div class="block-div-tr"></div>
+    <footer>
+        <p>Tüm Hakları Saklıdır. Ahmet Emin Kaya®</p>
+    </footer>
+</body>
+</html>
