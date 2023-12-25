@@ -32,6 +32,16 @@
             <center class="login-form">
                 {% block content %}
                 <h2>Giriş Yap</h2>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class="flash-messages">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+
                 <form method="POST" action="{{ url_for('login') }}">
                 {{ form.hidden_tag() }}
                     <div class="form-group">

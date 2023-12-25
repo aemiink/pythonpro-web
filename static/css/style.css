@@ -356,3 +356,59 @@ footer{
     font-weight: 500;
     text-transform: uppercase;
 }
+
+th, td {
+    border-bottom: 1px solid #ddd;
+  }
+
+tr:hover{
+    background-color: coral;
+    color: white;
+}
+
+.leaderboard-table{
+    font-family: 'Mina', sans-serif;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.add_question-form {
+    font-family:  'Mina', sans-serif;
+    font-size: 120%;
+}
+
+.add_question-form h2{
+    display: inline-block;
+    margin: 49px 8px 50px ;
+    padding: 12px;
+    font-family: 'Mina', sans-serif;
+    border: 1px solid #A18FE7;
+    border-radius: 10px;
+    background-color: #A18FE7;
+    color: #E5E2F2 ;
+    line-height: 1.7;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.form-control{
+    display: block;
+    width: 900px;
+    height: 20px;
+    border: 2px solid #F8BE6F;
+    border-radius: 10px;
+}
+
+.first{
+    height: 50px;
+}
+
+.block-div-add{
+    border-bottom: 2px solid #a18fe728;
+    margin: 0.5%;
+}
+
+.block-div-addfirst{
+    border-top: 2px solid #a18fe728;
+    margin: 0.5%;
+}

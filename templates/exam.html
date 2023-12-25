@@ -29,7 +29,7 @@
         </nav>
     </header>
             <center>
-                <form class="question" method="post" action="{{ url_for('submit_answer') }}">
+                <form class="question" method="post" action="{{ url_for('submit_answer') }}" autocomplete="off">
                     {{ form.hidden_tag() }}
                     <h1>Kendinizi Değerlendirin!</h1>
                     <br>
@@ -48,28 +48,18 @@
                     {% endfor %}
                 
                     <button type="submit" class="btn btn-primary">Cevabı Gönder</button>
-                    
-                    {% if current_user.last_question %}
-                        {% if current_user.last_question.correct_answer == form.answer.data %}
+
+                    {% if previous_question %}
+                        {% if form.answer.data is defined and form.answer.data == previous_question.correct_answer %}
                             <p style="color: green;">Doğru!</p>
-                        {% else %}
-                            <p style="color: red;">Yanlış! Doğru Cevap: {{ current_user.last_question.correct_answer }}</p>
+                        {% elif form.answer.data is defined %}
+                            <p style="color: red;">Yanlış! Doğru Cevap: {{ previous_question.correct_answer }}</p>
                         {% endif %}
                     {% endif %}
+                
                 </form>
             </center>
         </section>
-        <section>
-            <center>
-                {%block content%}
-                <form class="go-to-leaderboard" action="{{ url_for('leaderboard') }}">
-                    <button>Lider Tablosuna Gidin</button>
-                </form>
-                {% endblock %}
-            </center>
-        </section>
-    </main>   
-
     <div class="block-div-tr"></div>
     
     <footer>

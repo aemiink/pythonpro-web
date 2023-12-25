@@ -124,28 +124,33 @@ def load_user(user_id):
 class AddQuestionForm(FlaskForm):
     content = StringField('Soru İçeriği', validators=[InputRequired()])
     correct_answer = StringField('Doğru Cevap', validators=[InputRequired()])
-    incorrect_answers = StringField('Yanlış Cevaplar (Virgülle Ayırın)', validators=[InputRequired()])
+    incorrect_answer = StringField('Yanlış Cevap', validators=[InputRequired()])
+    incorrect2_answer = StringField('Yanlış Cevap 2', validators=[InputRequired()])
+    incorrect3_answer = StringField('Yanlış Cevap 3', validators=[InputRequired()])
     points = IntegerField('Puan', validators=[InputRequired()])
     submit = SubmitField('Soruyu Ekle')
 
 @app.route('/add_question', methods=['GET', 'POST'])
 @login_required
 def add_question():
-
     form = AddQuestionForm()
 
     if form.validate_on_submit():
         # Formdan gelen verileri al
         content = form.content.data
         correct_answer = form.correct_answer.data
-        incorrect_answers = form.incorrect_answers.data.split(',')
+        incorrect_answer = form.incorrect_answer.data
+        incorrect2_answer = form.incorrect2_answer.data
+        incorrect3_answer = form.incorrect3_answer.data
         points = form.points.data
 
         # Soruyu veritabanına ekle
         db_question = Question(
             content=content,
             correct_answer=correct_answer,
-            incorrect_answers=','.join(incorrect_answers),
+            incorrect_answers=incorrect_answer,
+            incorrect2_answers=incorrect2_answer,
+            incorrect3_answers=incorrect3_answer,
             points=points
         )
         db.session.add(db_question)
@@ -153,6 +158,8 @@ def add_question():
 
         flash('Soru başarıyla eklendi!', 'success')
         return redirect(url_for('add_question'))
+
+    return render_template('add_question.html', form=form)
 
 @app.route('/')
 def index():
@@ -257,32 +264,33 @@ def submit_answer():
         )
         db.session.add(answer)
 
-        if user_answer == current_user.last_question.correct_answer:
-            current_user.score += current_user.last_question.points
-            flash('Doğru cevap! Puanınız artırıldı.', 'success')
-        else:
-            current_user.score -= 5
-            flash('Yanlış cevap. Puanınız 5 azaltıldı.', 'danger')
+        # Son soruyu geçici bir değişkene kaydet
+        previous_question = current_user.last_question
+
+        if user_answer == previous_question.correct_answer:
+            current_user.score += previous_question.points  # Sadece doğru cevap verildiğinde puanı artır
+            db.session.commit()  # Puanı güncelle
 
         # Son soruyu güncelle
         current_user.last_question = get_random_question_from_db()
 
-        # Puanı güncelle
-        db.session.commit()
-
         flash('Cevabınız gönderildi!', 'success')
 
-    return redirect(url_for('exam'))
+    return redirect(url_for('exam', current_user=current_user))
 
 
 
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    return render_template('leaderboard.html', user=current_user)
+    # Tüm kullanıcıları puanlarına göre sırala
+    leaderboard = User.query.order_by(User.score.desc()).all()
+    return render_template('leaderboard.html', leaderboard=leaderboard)
+
 
 def get_random_question_from_db():
     return Question.query.filter(and_(Question.id != current_user.last_question_id, Question.id.notin_([q.id for q in current_user.answers]))).order_by(func.random()).first()
+
 
 
 if __name__ == '__main__':

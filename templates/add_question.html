@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <title>Yazılım Dehası // Bilgilerini Pekiştir!</title>
 </head>
+
+
 <body>
     <header>
         <nav class="header__nav">
@@ -16,7 +18,7 @@
                 <li class="list__element"><a href="{{ url_for('exam') }}"> Sınav </a></li>
                 <li class="list__element"><a href="{{ url_for('add_question') }}"> Soru Ekle </a></li>
                 <li class="list__element"><a href="{{ url_for('leaderboard') }}"> Lider Tablosu </a></li>
-                <li class="list__element"><a href=""> Yazılım Dilleri </a></li>
+                <li class="list__element"><a href=""> Yazılım Diilleri </a></li>
                 {% if current_user.is_authenticated %}
                     <li class="list__element"><a href="">{{ current_user.username }}</a></li>
                     <li class="list__element button"><a id="logout-link" href="{{ url_for('logout') }}">Çıkış Yap</a></li>
@@ -26,37 +28,63 @@
                 {% endif %}
             </ul>
         </nav>
-        </nav>
     </header>
-            <center>
-                <h1>Soru Ekle</h1>
-                <form method="post" action="{{ url_for('add_question') }}">
-                    {{ form.hidden_tag() }}
-                    <label for="content">Soru İçeriği:</label>
-                    {{ form.content(class="form-control", id="content") }}
-                    <br>
-                    <label for="correct_answer">Doğru Cevap:</label>
-                    {{ form.correct_answer(class="form-control", id="correct_answer") }}
-                    <br>
-                    <label for="incorrect_answers">Yanlış Cevaplar (Virgülle Ayırın):</label>
-                    {{ form.incorrect_answers(class="form-control", id="incorrect_answers") }}
-                    <br>
-                    <label for="points">Puan:</label>
-                    {{ form.points(class="form-control", id="points") }}
-                    <br>
-                    <button type="submit" class="btn btn-primary">Soruyu Ekle</button>
-                </form>                         
-            </center>
-        </section>
-        <section>
-            
-        </section>
-    </main>   
+    <main>
+        <center class="add_question-form">
+            <h2>Soru Ekle</h2>
+            <form  method="post" action="{{ url_for('add_question') }}">
+                {{ form.hidden_tag() }}
 
-    <div class="block-div-tr"></div>
-    
-    <footer>
-        <p>Tüm Hakları Saklıdır. Ahmet Emin Kaya®</p>
-    </footer>
+                <div>
+                    <label for="{{ form.content.id }}">{{ form.content.label.text }}</label>
+                    {{ form.content(class="form-control first") }}
+                </div>
+                <div class="block-div-add, block-div-addfirst"></div>
+                <div>
+                    <label for="{{ form.correct_answer.id }}">{{ form.correct_answer.label.text }}</label>
+                    {{ form.correct_answer(class="form-control") }}
+                </div>
+                <div class="block-div-add"></div>
+                <div>
+                    <label for="{{ form.incorrect_answer.id }}">{{ form.incorrect_answer.label.text }}</label>
+                    {{ form.incorrect_answer(class="form-control") }}
+                </div>
+                <div class="block-div-add"></div>
+                <div>
+                    <label for="{{ form.incorrect2_answer.id }}">{{ form.incorrect2_answer.label.text }}</label>
+                    {{ form.incorrect2_answer(class="form-control") }}
+                </div>
+                <div class="block-div-add"></div>
+                <div>
+                    <label for="{{ form.incorrect3_answer.id }}">{{ form.incorrect3_answer.label.text }}</label>
+                    {{ form.incorrect3_answer(class="form-control") }}
+                </div>
+                <div class="block-div-add"></div>
+                <div>
+                    <label for="{{ form.points.id }}">{{ form.points.label.text }}</label>
+                    {{ form.points(class="form-control") }}
+                </div>
+                <div class="block-div-add"></div>
+                {% block content %}
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <ul class="flash-messages">
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                {% endblock %}
+                <div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </center>
+        <div class="block-div-tr"></div>    
+    </main>
 </body>
+<footer>
+    <p>Tüm Hakları Saklıdır. Ahmet Emin Kaya®</p>
+</footer>
 </html>

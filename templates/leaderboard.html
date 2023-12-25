@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/img/ıcon.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Yazılım Dehası // Bilgilerini Pekiştir!</title>
+</head>
+<body >
+    <header>
+        <nav class="header__nav">
+            <ul class="nav__list">
+                <li class="list__element list__image"><img class="logo" src="/static/img/logo.png" alt="site_logo"></li>
+                <li class="list__element"><a href="{{ url_for('index') }}"> Ana Sayfa </a></li>
+                <li class="list__element"><a href="{{ url_for('exam')}}"> Sınav </a></li>
+                <li class="list__element"><a href="{{ url_for('add_question') }}"> Soru Ekle </a></li>
+                <li class="list__element"><a href="{{ url_for('leaderboard') }}"> Lider Tablosu </a></li>
+                <li class="list__element"><a href=""> Yazılım Dilleri </a></li>
+                {% if current_user.is_authenticated %}
+                    <li class="list__element"><a href="">{{ current_user.username }}</a></li>
+                    <li class="list__element button"><a id="logout-link" href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+                {% else %}
+                    <li class="list__element button"><a href="{{ url_for('login') }}">Giriş Yap</a></li>
+                    <li class="list__element button"><a href="{{ url_for('register') }}">Kayıt Ol</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        </nav>
+    </header>
+    <main>
+        <center>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Kullanıcı Adı</th>
+                        <th>Puan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in leaderboard %}
+                        <tr {% if user == current_user %}style="background-color: lightblue;"{% endif %}>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.score }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </center>        
+    </main>   
+
+    <div class="block-div-tr"></div>
+
+    <footer>
+        <p>Tüm Hakları Saklıdır. Ahmet Emin Kaya®</p>
+    </footer>
+</body>
+</html>
+
+
+
+

@@ -29,6 +29,15 @@
         </nav>
     </header>
     <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
         <section>
             <div class="conatiner">
                 <div class="hh-title-wr mod--home">
