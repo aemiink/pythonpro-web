@@ -71,6 +71,9 @@ class User(db.Model, UserMixin):
         self.email = email
         self.password = generate_password_hash(password).decode('utf-8')
 
+    def addScore(self, points):
+        self.score += points
+
 class RegistrationForm(FlaskForm):
     username = StringField('Kullanıcı Adı', validators=[InputRequired(), Length(min=4, max=15)])
     email = StringField('E-posta', validators=[InputRequired(), Email(message='Geçerli bir e-posta adresi girin'), Length(max=50)])
@@ -268,15 +271,17 @@ def submit_answer():
         previous_question = current_user.last_question
 
         if user_answer == previous_question.correct_answer:
-            current_user.score += previous_question.points  # Sadece doğru cevap verildiğinde puanı artır
-            db.session.commit()  # Puanı güncelle
+            points = previous_question.points
+            current_user.add_score(points)  # Kullanıcının puanını artır
+            db.session.commit()  # Puanı ve cevabı güncelle
 
         # Son soruyu güncelle
         current_user.last_question = get_random_question_from_db()
 
         flash('Cevabınız gönderildi!', 'success')
 
-    return redirect(url_for('exam', current_user=current_user))
+    return redirect(url_for('exam'))
+
 
 
 
