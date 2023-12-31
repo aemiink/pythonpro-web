@@ -3,8 +3,8 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, cur
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, RadioField, IntegerField
-from wtforms.validators import InputRequired, Email, Length, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, RadioField, IntegerField, HiddenField 
+from wtforms.validators import InputRequired, Email, Length, ValidationError, DataRequired
 import secrets
 import email_validator
 from flask_bcrypt import generate_password_hash, check_password_hash, Bcrypt
@@ -47,7 +47,8 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    user_answer = db.Column(db.String(255), nullable=False)
+    correct_answer = db.Column(db.String(255), nullable=False)
+    user_answer = db.Column(db.String(255), nullable=True)
 
 
 class User(db.Model, UserMixin):
@@ -113,8 +114,15 @@ admin.add_view(ModelView(Question, db.session))
 
 
 class ExamForm(FlaskForm):
-    answer = RadioField('Cevabınız', choices=[], validators=[InputRequired()])
-    submit = SubmitField('Cevabı Gönder')
+    # Doğru cevap için RadioField
+    answer = RadioField('Cevabınız', choices=[], validators=[DataRequired()])
+
+    # Yanlış cevaplar için HiddenField'lar
+    incorrect_answer_1 = HiddenField('Yanlış Cevap 1', default="")
+    incorrect_answer_2 = HiddenField('Yanlış Cevap 2', default="")
+    incorrect_answer_3 = HiddenField('Yanlış Cevap 3', default="")
+    
+
 
 
 @login_manager.user_loader
@@ -246,37 +254,50 @@ def exam():
         return redirect(url_for('index'))
 
 
-
-
-@app.route('/submit_answer', methods=['POST'])
-@login_required
+@app.route('/submit_answer', methods=['POST', 'GET'])
 def submit_answer():
     form = ExamForm()
 
+    # Form doğrulama işlemi
     if form.validate_on_submit():
+        # Doğrulama başarılıysa buraya gelir
+
         user_answer = form.answer.data
 
-        # Answer modeline kaydet
-        answer = Answer(
-            user=current_user,
-            question=current_user.last_question,
-            user_answer=user_answer
-        )
-        db.session.add(answer)
+        # Soru alınması ve kontrolü
+        current_question = get_random_question_from_db()
+        if current_question is not None:
+            # Cevap nesnesinin oluşturulması ve veritabanına eklenmesi
+            answer = Answer(
+                user_id=current_user.id,
+                question_id=current_question.id,
+                correct_answer=current_question.correct_answer,
+                user_answer=user_answer,
+            )
+            db.session.add(answer)
+            db.session.commit()
 
-        # Son soruyu geçici bir değişkene kaydet
-        previous_question = current_user.last_question
+            # Kullanıcının puanını güncelle
+            if user_answer == current_question.correct_answer:
+                current_user.score += current_question.points
+                db.session.commit()
 
-        if user_answer == previous_question.correct_answer:
-            current_user.score += previous_question.points  # Sadece doğru cevap verildiğinde puanı artır
-            db.session.commit()  # Puanı güncelle
+            # Kullanıcının son sorusunun güncellenmesi
+            current_user.last_question = get_random_question_from_db()
+            db.session.commit()
 
-        # Son soruyu güncelle
-        current_user.last_question = get_random_question_from_db()
+            flash('Cevap gönderildi ve puan güncellendi.', 'success')
+            return redirect(url_for('exam'))
+        else:
+            # Soru alınamadıysa kullanıcıya uyarı ver ve sınav sayfasına yönlendir
+            flash('Tüm soruları cevapladınız veya başka bir hata oluştu!', 'danger')
+            return redirect(url_for('exam'))
 
-        flash('Cevabınız gönderildi!', 'success')
+    flash("Formda Hata Mevcut! Veriler Çekilmedi!")
+    return render_template('exam.html', question=current_user.last_question, form=form)
 
-    return redirect(url_for('exam', current_user=current_user))
+
+
 
 
 

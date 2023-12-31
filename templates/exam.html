@@ -38,26 +38,39 @@
                     </div>
                     <h2>{{ question.content }}</h2>
                 
-                    {% for answer in question.all_answers %}
-                        <br>
-                        <label>
-                            <input type="radio" name="answer" value="{{ answer }}" class="question-to-answer" required>
-                            {{ answer }}
-                        </label>
-                        <br>
+                    {% for answer in [question.correct_answer, question.incorrect_answers, question.incorrect2_answers, question.incorrect3_answers] %}
+                    <label>
+                        <input type="radio" name="answer" value="{{ answer }}" class="question-to-answer" required>
+                        {{ answer }}
+                    </label>
+                    <input type="hidden" name="incorrect_answer_1" value="{{ question.incorrect_answers }}">
+                    <input type="hidden" name="incorrect_answer_2" value="{{ question.incorrect2_answers }}">
+                    <input type="hidden" name="incorrect_answer_3" value="{{ question.incorrect3_answers }}">
                     {% endfor %}
                 
-                    <button type="submit" class="btn btn-primary">Cevabı Gönder</button>
 
-                    {% if previous_question %}
-                        {% if form.answer.data is defined and form.answer.data == previous_question.correct_answer %}
-                            <p style="color: green;">Doğru!</p>
-                        {% elif form.answer.data is defined %}
-                            <p style="color: red;">Yanlış! Doğru Cevap: {{ previous_question.correct_answer }}</p>
-                        {% endif %}
+                   <!-- form etiketi içindeki hata mesajları -->
+                    {% for field, errors in form.errors.items() %}
+                    {% for error in errors %}
+                        <div class="error">{{ error }}</div>
+                    {% endfor %}
+                    {% endfor %}
+
+                    <!-- get_flashed_messages() ile gelen hata mesajları -->
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class="flash-messages">
+                            {% for message in messages %}
+                                <li class="flash-message">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
                     {% endif %}
+                    {% endwith %}
+
                 
+                    <button type="submit" class="btn btn-primary">Cevabı Gönder</button>
                 </form>
+                
             </center>
         </section>
     <div class="block-div-tr"></div>

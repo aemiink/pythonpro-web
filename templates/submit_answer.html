@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Soru ve Cevabınız</h1>
+
+    {% if previous_question %}
+        <p>Soru: {{ previous_question.question }}</p>
+        <p>Cevap: {{ previous_question.correct_answer }}</p>
+
+        <form method="POST" action="{{ url_for('exam') }}">
+            {{ form.csrf_token }}
+            <button type="submit" class="btn btn-primary">Sonraki Soru</button>
+        </form>
+
+        {% if form.answer.data is defined %}
+            {% if form.answer.data == previous_question.correct_answer %}
+                <p style="color: green;">Doğru!</p>
+            {% else %}
+                <p style="color: red;">Yanlış! Doğru Cevap: {{ previous_question.correct_answer }}</p>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <p>Sorular çekilemedi veya tüm soruları cevapladınız.</p>
+    {% endif %}
+{% endblock %}
